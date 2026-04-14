@@ -1,0 +1,142 @@
+Default.aspx में यह code लिखो:
+<form id="form1" runat="server">
+
+    Roll No:
+    <asp:TextBox ID="txtRollNo" runat="server"></asp:TextBox>
+    <br /><br />
+
+    Name:
+    <asp:TextBox ID="txtName" runat="server"></asp:TextBox>
+    <br /><br />
+
+    Age:
+    <asp:TextBox ID="txtAge" runat="server"></asp:TextBox>
+    <br /><br />
+
+    <asp:Button ID="btnInsert" runat="server"
+        Text="Insert"
+        OnClick="btnInsert_Click" />
+
+    <asp:Button ID="btnUpdate" runat="server"
+        Text="Update"
+        OnClick="btnUpdate_Click" />
+
+    <asp:Button ID="btnDelete" runat="server"
+        Text="Delete"
+        OnClick="btnDelete_Click" />
+
+    <asp:Button ID="btnSelect" runat="server"
+        Text="Select"
+        OnClick="btnSelect_Click" />
+
+</form>
+
+
+_______________________________________________________________
+
+Web.config में यह add करो:
+<connectionStrings>
+  <add name="dbcon"
+       connectionString="Data Source=.;Initial Catalog=StudentDB;Integrated Security=True"/>
+</connectionStrings>
+
+
+------------------------------------------------------------------
+
+Default.aspx.cs में ऊपर लिखो:
+
+using System.Data.SqlClient;
+using System.Configuration;
+
+
+______________________________________________________
+
+insert 
+protected void btnInsert_Click(object sender, EventArgs e)
+{
+    SqlConnection con = new SqlConnection(
+        ConfigurationManager.ConnectionStrings["dbcon"].ConnectionString
+    );
+
+    con.Open();
+
+    string query = "insert into Student values('" +
+                   txtRollNo.Text + "','" +
+                   txtName.Text + "','" +
+                   txtAge.Text + "')";
+
+    SqlCommand cmd = new SqlCommand(query, con);
+
+    cmd.ExecuteNonQuery();
+
+    con.Close();
+}
+
+update
+
+protected void btnUpdate_Click(object sender, EventArgs e)
+{
+    SqlConnection con = new SqlConnection(
+        ConfigurationManager.ConnectionStrings["dbcon"].ConnectionString
+    );
+
+    con.Open();
+
+    string query = "update Student set Name='" +
+                   txtName.Text +
+                   "', Age='" + txtAge.Text +
+                   "' where RollNo='" +
+                   txtRollNo.Text + "'";
+
+    SqlCommand cmd = new SqlCommand(query, con);
+
+    cmd.ExecuteNonQuery();
+
+    con.Close();
+}
+
+delete
+protected void btnDelete_Click(object sender, EventArgs e)
+{
+    SqlConnection con = new SqlConnection(
+        ConfigurationManager.ConnectionStrings["dbcon"].ConnectionString
+    );
+
+    con.Open();
+
+    string query = "delete from Student where RollNo='" +
+                   txtRollNo.Text + "'";
+
+    SqlCommand cmd = new SqlCommand(query, con);
+
+    cmd.ExecuteNonQuery();
+
+    con.Close();
+}
+
+
+//select
+protected void btnSelect_Click(object sender, EventArgs e)
+{
+    SqlConnection con = new SqlConnection(
+        ConfigurationManager.ConnectionStrings["dbcon"].ConnectionString
+    );
+
+    con.Open();
+
+    string query = "select * from Student where RollNo='" +
+                   txtRollNo.Text + "'";
+
+    SqlCommand cmd = new SqlCommand(query, con);
+
+    SqlDataReader dr = cmd.ExecuteReader();
+
+    if (dr.Read())
+    {
+        txtName.Text = dr["Name"].ToString();
+        txtAge.Text = dr["Age"].ToString();
+    }
+
+    con.Close();
+}
+
