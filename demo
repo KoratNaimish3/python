@@ -141,3 +141,133 @@ protected void btnSelect_Click(object sender, EventArgs e)
     con.Close();
 }
 
+
+
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="crud.aspx.cs" Inherits="crud" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+        <asp:Label ID="Label1" runat="server" Text="Enter Name"></asp:Label>
+        <asp:TextBox ID="TextBox1" runat="server"></asp:TextBox><br />
+
+        <asp:Label ID="Label2" runat="server" Text="Enter Age"></asp:Label>
+        <asp:TextBox ID="TextBox2" runat="server"></asp:TextBox><br />
+
+        <asp:Button ID="Button1" runat="server" Text="Insert" OnClick="Button1_Click" />
+        <asp:Button ID="Button3" runat="server" Text="Update" OnClick="Button3_Click" /><br /><br />
+
+        <asp:Label ID="Label3" runat="server" Text="Enter id to search"></asp:Label>
+        <asp:TextBox ID="TextBox3" runat="server"></asp:TextBox><br />
+
+        <asp:Button ID="Button2" runat="server" Text="Search" OnClick="Button2_Click" /><br />
+
+        <asp:Label ID="Label4" runat="server" Text="Enter id to delete"></asp:Label>
+        <asp:TextBox ID="TextBox4" runat="server"></asp:TextBox>
+        <asp:Button ID="Button4" runat="server" Text="Delete" OnClick="Button4_Click" />
+
+    </div>
+    </form>
+</body>
+</html>
+
+
+
+
+using System;
+using System.Data.SqlClient;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+public partial class crud : System.Web.UI.Page
+{
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        String a = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|student.mdf;Integrated Security=True";
+        SqlConnection con = new SqlConnection(a);
+        con.Open();
+
+        String sel = "select * from stud";
+        SqlCommand cmd = new SqlCommand(sel, con);
+        SqlDataReader rd = cmd.ExecuteReader();
+
+        while (rd.Read())
+        {
+            Response.Write("name :" + rd["name"].ToString() + " age :" + rd["age"].ToString());
+        }
+    }
+
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        String a = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|student.mdf;Integrated Security=True";
+        SqlConnection con = new SqlConnection(a);
+        con.Open();
+
+        String qry = "INSERT INTO stud(name,age)VALUES(@name,@age)";
+        SqlCommand cmd = new SqlCommand(qry,con);
+        cmd.Parameters.AddWithValue("@name", TextBox1.Text);
+        cmd.Parameters.AddWithValue("@age", TextBox2.Text);
+        cmd.ExecuteNonQuery();
+        Response.Write("Data Inserted");
+    }
+
+    protected void Button2_Click(object sender, EventArgs e)
+    {
+        String a = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|student.mdf;Integrated Security=True";
+        SqlConnection con = new SqlConnection(a);
+        con.Open();
+
+        String sel = "select * from stud where id=@id";
+        SqlCommand cmd = new SqlCommand(sel, con);
+        cmd.Parameters.AddWithValue("@id", TextBox3.Text);
+        SqlDataReader rd = cmd.ExecuteReader();
+
+        while(rd.Read())
+        {
+            TextBox1.Text = rd["name"].ToString();
+            TextBox2.Text = rd["age"].ToString();
+        }
+
+
+
+    }
+
+    protected void Button3_Click(object sender, EventArgs e)
+    {
+
+        String a = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|student.mdf;Integrated Security=True";
+        SqlConnection con = new SqlConnection(a);
+        con.Open();
+
+        String qry = "update stud set name=@name,age=@age where id=@id";
+        SqlCommand cmd = new SqlCommand(qry, con);
+        cmd.Parameters.AddWithValue("@name", TextBox1.Text);
+        cmd.Parameters.AddWithValue("@age", TextBox2.Text);
+        cmd.Parameters.AddWithValue("@id", TextBox3.Text);
+        cmd.ExecuteNonQuery();
+        Response.Write("Updated Successfully");
+    }
+
+    protected void Button4_Click(object sender, EventArgs e)
+    {
+        String a = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|student.mdf;Integrated Security=True";
+        SqlConnection con = new SqlConnection(a);
+        con.Open();
+
+        String qry = "delete from stud where id=@id";
+        SqlCommand cmd = new SqlCommand(qry, con);
+        cmd.Parameters.AddWithValue("@id", TextBox4.Text);
+        cmd.ExecuteNonQuery();
+        Response.Write("Deleted Successfully");
+    }
+}
